@@ -19,7 +19,7 @@ async def callback_query_handler(client, query: CallbackQuery):
             txt.ABOUT_TXT, 
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton('⚡ Help', callback_data='help')],[
-                    InlineKeyboardButton('🤖 Source Code', url="https://github.com/Dypixx/Instaloader"),
+                    InlineKeyboardButton('🤖 Source Code', url="https://t.me/Sitaratoons_Support_bot"),
                     InlineKeyboardButton('⬅️ Back', callback_data='back')]]))
     elif query.data == "back":
         await query.message.edit_text(
