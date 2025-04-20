@@ -11,13 +11,13 @@ CHNL_LINK = os.getenv("CHNL_LINK", "https://t.me/DypixxTech")
 LOG_CHANNEL = int(os.getenv("LOG_CHANNEL", "-100xxxxxxx"))
 DUMP_CHANNEL = int(os.getenv("DUMP_CHANNEL", "-100xxxxxxx"))
 
-DB_URI = os.getenv("DB_URI", "mongodb+srv://xxxx:xxxx@xxxx")
-DB_NAME = os.getenv("DB_NAME", "instalaoder")
+DB_URI = os.getenv("DB_URI", "") #MongoDB URL
+DB_NAME = os.getenv("DB_NAME", "DypixxTech")
 
 IS_FSUB = bool(os.environ.get("FSUB", True)) # Set "True" For Enable Force Subscribe
-AUTH_CHANNELS = os.environ.get("AUTH_CHANNEL", "-100xxxxxxx") # Add Multiple Channels iD By Space
-AUTH_CHANNELS = [int(channel_id) for channel_id in AUTH_CHANNELS.split(",")] # DONT TOUCH
+AUTH_CHANNEL = int(os.environ.get("AUTH_CHANNEL", "-100xxxxxxx"))
 
+REEL_AUTO_DELETE = int(os.getenv("REEL_AUTO_DELETE", "600")) #10min
 
 """
 This code is created and owned by @Dypixx. Do not remove or modify the credit.
