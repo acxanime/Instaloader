@@ -19,6 +19,13 @@ class Bot(Client):
         await super().start()
         me = await self.get_me()
         print(f"{me.first_name} is started...")
+        print("""
+██████  ██    ██ ██████  ██ ██   ██ ██   ██     ████████ ███████  ██████ ██   ██ 
+██   ██  ██  ██  ██   ██ ██  ██ ██   ██ ██         ██    ██      ██      ██   ██ 
+██   ██   ████   ██████  ██   ███     ███          ██    █████   ██      ███████ 
+██   ██    ██    ██      ██  ██ ██   ██ ██         ██    ██      ██      ██   ██ 
+██████     ██    ██      ██ ██   ██ ██   ██        ██    ███████  ██████ ██   ██""")
+
     async def stop(self, *args):
         await super().stop()
         me = await self.get_me()
