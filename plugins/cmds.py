@@ -19,8 +19,11 @@ async def start_cmd(client, message):
         await dy.addUser(message.from_user.id, message.from_user.first_name)
         await client.send_message(LOG_CHANNEL, text="#NEw_USer\n\nUser: {}\nID: {}".format(message.from_user.mention, message.from_user.id))
     if IS_FSUB and not await get_fsub(client, message):return
-    await message.reply_text(txt.START_TXT.format(message.from_user.mention),reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Help", callback_data="help"), InlineKeyboardButton("About", callback_data="about")]]))
+    await message.reply_text(txt.START_TXT.format(message.from_user.mention),
+                             reply_markup=InlineKeyboardMarkup([
+                                 [InlineKeyboardButton("🎭 Updates 🎭", url="https://telegram.me/DypixxTech")],
+                                 [InlineKeyboardButton("⚡ Help", callback_data="help"), InlineKeyboardButton("📚 About", callback_data="about")],
+                                 [InlineKeyboardButton("🧑‍💻 Developer", user_id=int(ADMIN))]]))
 
 @Client.on_message(filters.command("broadcast") & (filters.private) & filters.user(ADMIN))
 async def broadcasting_func(client: Client, message: Message):
@@ -108,11 +111,12 @@ async def unban_user_cmd(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"An error occurred: {str(e)}")
 
-@Client.on_message(filters.command("total_users") & filters.private & filters.user(ADMIN))
+@Client.on_message(filters.command("stats") & filters.private & filters.user(ADMIN))
 async def total_users(client, message):
     try:
         users = await dy.get_all_users()
-        await message.reply(f"👥 **Total Users:** `{len(users)}`",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🎭 Close", callback_data="close")]]))
+        active_today = await dy.get_active_users_today()
+        await message.reply(f"📊 **Bot Statistics**\n\n👥 **Total Users:** `{len(users)}`\n✅ **Active Today:** {active_today}\n📈 **Active Rate:** {(active_today/len(users)*100):.1f}%",reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🎭 Close", callback_data="close")]]))
     except Exception as e:
         r=await message.reply(f"❌ *Error:* `{str(e)}`")
         await asyncio.sleep(30)
