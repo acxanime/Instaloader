@@ -14,6 +14,17 @@
 - ✅ **Ban / Unban & Broadcast** – Full control over users  
 - ✅ **Multi FSub Support** – Add multiple channels for force subscription  
 
+
+## 🎭 Bot Commands:
+```
+- /start - Start the bot  
+- /Insta - Download reels on Group (Group Only)
+- /broadcast - Admins ONLY
+- /ban - Admins ONLY  
+- /unban - Admins ONLY  
+- /stats - Admins ONLY
+```
+
 ## ☁️ Deploy On  
 - 🔹 **Seenode** (Paid)  
 - 🔹 **Koyeb** (Free)  
