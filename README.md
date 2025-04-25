@@ -42,5 +42,5 @@ gunicorn app:app & python3 bot.py
 ```
 
 ## 👨‍💻 Developer
-- This source code was coded, developed, & modified by [Dypixx](https://dypixx.vercel.app).
+- This source code was coded, developed, & modified by [Dypixx](https://dypixx.online).
 - 🔗 Instagram Downloader API is owned & copyrighted by [Hazex](https://telegram.me/MrHazex).
