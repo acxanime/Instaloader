@@ -17,7 +17,7 @@ DB_NAME = os.getenv("DB_NAME", "Cluster0")
 IS_FSUB = bool(os.environ.get("FSUB", False)) # Set "True" For Enable Force Subscribe
 AUTH_CHANNEL = int(os.environ.get("AUTH_CHANNEL", "-1002355394644"))
 
-REEL_AUTO_DELETE = int(os.getenv("REEL_AUTO_DELETE", "600")) #10min
+REEL_AUTO_DELETE = int(os.getenv("REEL_AUTO_DELETE", "86400")) #10min
 
 """
 This code is created and owned by @Dypixx. Do not remove or modify the credit.
