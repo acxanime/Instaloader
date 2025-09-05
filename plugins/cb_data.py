@@ -18,8 +18,10 @@ async def callback_query_handler(client, query: CallbackQuery):
         await query.message.edit_text(
             txt.ABOUT_TXT, 
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton('⚡ Help', callback_data='help')],
-                    [InlineKeyboardButton('⬅️ Back', callback_data='back')]]))
+                [[
+                        InlineKeyboardButton("Help", callback_data="help"),
+                        InlineKeyboardButton("About", callback_data="about")
+                ]]))
     elif query.data == "back":
         await query.message.edit_text(
             txt.START_TXT.format(query.from_user.mention),
@@ -39,4 +41,5 @@ Removing the credit does not make you a developer; it only shows a lack of respe
 Respect the work. Keep the credit. 
 
 """
+
 
