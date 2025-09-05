@@ -21,7 +21,7 @@ async def start_cmd(client, message):
     if IS_FSUB and not await get_fsub(client, message):return
     await message.reply_text(txt.START_TXT.format(message.from_user.mention),
                              reply_markup=InlineKeyboardMarkup([
-                                 [InlineKeyboardButton("🎭 Updates 🎭", url="https://telegram.me/DypixxTech")],
+                                 [InlineKeyboardButton("🎭 Updates 🎭", url="https://t.me/ST_Rename_Update")],
                                  [InlineKeyboardButton("⚡ Help", callback_data="help"), InlineKeyboardButton("📚 About", callback_data="about")],
                                  [InlineKeyboardButton("🧑‍💻 Developer", user_id=int(ADMIN))]]))
 
