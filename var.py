@@ -4,7 +4,7 @@ from typing import List
 
 API_ID = os.getenv("API_ID", "18946488")
 API_HASH = os.getenv("API_HASH", "c163d4e28e63196c3806cf3b9b2885de")
-BOT_TOKEN = os.getenv("BOT_TOKEN", "@InstaReelsDownloader_robot")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "7324011240:AAE7K6_f2JMmqqUX37Iohhdkgez5d2FaPpI")
 ADMIN = int(os.getenv("ADMIN", "6692613520"))
 
 CHNL_LINK = os.getenv("CHNL_LINK", "https://t.me/ST_Rename_Update")
