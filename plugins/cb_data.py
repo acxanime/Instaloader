@@ -26,7 +26,7 @@ async def callback_query_handler(client, query: CallbackQuery):
         await query.message.edit_text(
             txt.START_TXT.format(query.from_user.mention),
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("🎭 Updates 🎭", url="https://telegram.me/DypixxTech")],
+                [InlineKeyboardButton("🎭 Updates 🎭", url="https://t.me/ST_Rename_Update")],
                 [InlineKeyboardButton("⚡ Help", callback_data="help"), InlineKeyboardButton("📚 About", callback_data="about")],
                 [InlineKeyboardButton("🧑‍💻 Developer", user_id=int(ADMIN))]]))
     elif query.data == "close":
@@ -41,6 +41,7 @@ Removing the credit does not make you a developer; it only shows a lack of respe
 Respect the work. Keep the credit. 
 
 """
+
 
 
 
