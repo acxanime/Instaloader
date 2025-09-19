@@ -9,7 +9,7 @@ ADMIN = int(os.getenv("ADMIN", "6692613520"))
 
 CHNL_LINK = os.getenv("CHNL_LINK", "https://t.me/ST_Rename_Update")
 LOG_CHANNEL = int(os.getenv("LOG_CHANNEL", "-1002320080278"))
-DUMP_CHANNEL = int(os.getenv("DUMP_CHANNEL", "-1002451946366"))
+DUMP_CHANNEL = int(os.getenv("DUMP_CHANNEL", "-1002956078693"))
 
 DB_URI = os.getenv("DB_URI", "") #MongoDB URL
 DB_NAME = os.getenv("DB_NAME", "Cluster0")
