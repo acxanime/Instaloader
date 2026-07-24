@@ -1,6 +1,7 @@
 pyrofork>=2.3.58
 tgcrypto
 motor
+aiohttp
 requests==2.28.2
 
 # Web Deployable Dependencies (Updated for Python 3.13)
