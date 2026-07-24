@@ -9,18 +9,35 @@ from var import IS_FSUB, ADMIN, CHNL_LINK, DUMP_CHANNEL, REEL_AUTO_DELETE
 from .fsub import get_fsub
 from .db import dy
 
+# Safe Admin ID handling
 ADMIN_ID = int(ADMIN[0]) if isinstance(ADMIN, list) else int(ADMIN)
 
+
 async def fetch_insta_media(url: str):
-    """Async helper function to fetch Instagram media details."""
-    api_url = f"https://insta-dl.hazex.workers.dev/?url={url}"
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(api_url, timeout=15) as response:
-                if response.status == 200:
-                    return await response.json()
-    except Exception as e:
-        print(f"Error fetching Instagram URL: {e}")
+    """Clean Instagram URL and fetch media using multiple fallback APIs."""
+    # Extra tracking parameters (e.g., ?igsh=...) remove karke clean URL banayein
+    clean_url = url.split("?")[0].strip()
+
+    # Fallback APIs List
+    apis = [
+        f"https://insta-dl.hazex.workers.dev/?url={clean_url}",
+        f"https://api.v2.instavideosdownloader.com/download?url={clean_url}",
+        f"https://v3.appstate.co/api/instagram?url={clean_url}"
+    ]
+
+    async with aiohttp.ClientSession() as session:
+        for api_url in apis:
+            try:
+                async with session.get(api_url, timeout=12) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        # Verify valid response structure
+                        if not data.get("error") and ("result" in data or "url" in data):
+                            return data
+            except Exception as e:
+                print(f"API Failed ({api_url}): {e}")
+                continue
+
     return None
 
 
@@ -46,13 +63,14 @@ async def handle_direct_instagram_link(client, message):
     P = await message.reply("**⏳ Pʀᴏᴄᴇssɪɴɢ ʏᴏᴜʀ ʀᴇǫᴜᴇsᴛ...**")
 
     data = await fetch_insta_media(url)
-    if not data or data.get("error") or "result" not in data:
+    if not data:
         await P.edit("**⚠️ Oᴏᴘs! Uɴᴀʙʟᴇ ᴛᴏ ᴘʀᴏᴄᴇss ᴛʜᴇ URL.\nPʟᴇᴀsᴇ ᴄʜᴇᴄᴋ ᴛʜᴇ ʟɪɴᴋ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.**")
         return
 
-    result = data["result"]
+    # Extract result safely
+    result = data.get("result", data)
     download_url = result.get("url")
-    extension = result.get("extension", "").lower()
+    extension = str(result.get("extension", "")).lower()
     duration = result.get("duration", "N/A")
     quality = result.get("quality", "N/A")
     Size = result.get("formattedSize", "N/A")
@@ -65,14 +83,15 @@ async def handle_direct_instagram_link(client, message):
     caption_common = f"<b>⏰ Dᴜʀᴀᴛɪᴏɴ: {duration}\n📚 Qᴜᴀʟɪᴛʏ: {quality}\n📁 Sɪᴢᴇ: {Size}</b>"
 
     try:
-        if extension in ["mp4", "mkv"]:
+        # Video/Reel Handling
+        if extension in ["mp4", "mkv"] or not extension:
             await client.send_chat_action(message.chat.id, ChatAction.UPLOAD_VIDEO)
             t = await message.reply_video(
                 video=download_url,
                 caption=f"<b>🎭 Iɴsᴛᴀ Rᴇᴇʟ</b>\n\n{caption_common}",
                 reply_markup=BTN
             )
-            
+
             if DUMP_CHANNEL:
                 await client.send_video(
                     DUMP_CHANNEL,
@@ -88,6 +107,7 @@ async def handle_direct_instagram_link(client, message):
                 await asyncio.sleep(REEL_AUTO_DELETE)
                 await t.delete()
 
+        # Image/Photo Handling
         elif extension in ["jpg", "jpeg", "png"]:
             await client.send_chat_action(message.chat.id, ChatAction.UPLOAD_PHOTO)
             i = await message.reply_photo(
@@ -154,13 +174,13 @@ async def download_instagram_content(client, message):
     P = await message.reply("**⏳ Pʀᴏᴄᴇssɪɴɢ ʏᴏᴜʀ ʀᴇǫᴜᴇsᴛ...**")
 
     data = await fetch_insta_media(url)
-    if not data or data.get("error") or "result" not in data:
+    if not data:
         await P.edit("**⚠️ Oᴏᴘs! Uɴᴀʙʟᴇ ᴛᴏ ᴘʀᴏᴄᴇss ᴛʜᴇ URL.\nPʟᴇᴀsᴇ ᴄʜᴇᴄᴋ ᴛʜᴇ ʟɪɴᴋ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.**")
         return
 
-    result = data["result"]
+    result = data.get("result", data)
     download_url = result.get("url")
-    extension = result.get("extension", "").lower()
+    extension = str(result.get("extension", "")).lower()
     duration = result.get("duration", "N/A")
     quality = result.get("quality", "N/A")
     Size = result.get("formattedSize", "N/A")
@@ -173,7 +193,7 @@ async def download_instagram_content(client, message):
     caption_common = f"<b>⏰ Dᴜʀᴀᴛɪᴏɴ: {duration}\n📚 Qᴜᴀʟɪᴛʏ: {quality}\n📁 Sɪᴢᴇ: {Size}</b>"
 
     try:
-        if extension in ["mp4", "mkv"]:
+        if extension in ["mp4", "mkv"] or not extension:
             await client.send_chat_action(message.chat.id, ChatAction.UPLOAD_VIDEO)
             if DUMP_CHANNEL:
                 await client.send_video(
