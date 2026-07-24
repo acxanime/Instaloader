@@ -9,34 +9,74 @@ from var import IS_FSUB, ADMIN, CHNL_LINK, DUMP_CHANNEL, REEL_AUTO_DELETE
 from .fsub import get_fsub
 from .db import dy
 
-# Safe Admin ID handling
+# Safe Admin ID handling (list ya int dono ke liye)
 ADMIN_ID = int(ADMIN[0]) if isinstance(ADMIN, list) else int(ADMIN)
 
 
 async def fetch_insta_media(url: str):
-    """Clean Instagram URL and fetch media using multiple fallback APIs."""
+    """Clean Instagram URL and fetch media using Cobalt & Fallback APIs."""
     # Extra tracking parameters (e.g., ?igsh=...) remove karke clean URL banayein
     clean_url = url.split("?")[0].strip()
 
-    # Fallback APIs List
-    apis = [
-        f"https://insta-dl.hazex.workers.dev/?url={clean_url}",
-        f"https://api.v2.instavideosdownloader.com/download?url={clean_url}",
-        f"https://v3.appstate.co/api/instagram?url={clean_url}"
-    ]
-
     async with aiohttp.ClientSession() as session:
-        for api_url in apis:
-            try:
-                async with session.get(api_url, timeout=12) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        # Verify valid response structure
-                        if not data.get("error") and ("result" in data or "url" in data):
-                            return data
-            except Exception as e:
-                print(f"API Failed ({api_url}): {e}")
-                continue
+        # 1. Primary API: Cobalt API (Fast & Reliable)
+        try:
+            cobalt_payload = {
+                "url": clean_url,
+                "videoQuality": "max"
+            }
+            cobalt_headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+            async with session.post(
+                "https://api.cobalt.tools/api/json",
+                json=cobalt_payload,
+                headers=cobalt_headers,
+                timeout=12
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    media_url = data.get("url")
+                    if media_url:
+                        is_video = data.get("type") == "video"
+                        return {
+                            "result": {
+                                "url": media_url,
+                                "extension": "mp4" if is_video else "jpg",
+                                "duration": "N/A",
+                                "quality": "HD",
+                                "formattedSize": "N/A"
+                            }
+                        }
+        except Exception as e:
+            print(f"Cobalt API Failed: {e}")
+
+        # 2. Fallback API 1
+        try:
+            async with session.get(
+                f"https://api.v2.instavideosdownloader.com/download?url={clean_url}",
+                timeout=10
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    if not data.get("error") and "result" in data:
+                        return data
+        except Exception as e:
+            print(f"Fallback 1 Failed: {e}")
+
+        # 3. Fallback API 2
+        try:
+            async with session.get(
+                f"https://insta-dl.hazex.workers.dev/?url={clean_url}",
+                timeout=10
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    if not data.get("error") and "result" in data:
+                        return data
+        except Exception as e:
+            print(f"Fallback 2 Failed: {e}")
 
     return None
 
@@ -67,7 +107,6 @@ async def handle_direct_instagram_link(client, message):
         await P.edit("**⚠️ Oᴏᴘs! Uɴᴀʙʟᴇ ᴛᴏ ᴘʀᴏᴄᴇss ᴛʜᴇ URL.\nPʟᴇᴀsᴇ ᴄʜᴇᴄᴋ ᴛʜᴇ ʟɪɴᴋ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.**")
         return
 
-    # Extract result safely
     result = data.get("result", data)
     download_url = result.get("url")
     extension = str(result.get("extension", "")).lower()
@@ -83,7 +122,7 @@ async def handle_direct_instagram_link(client, message):
     caption_common = f"<b>⏰ Dᴜʀᴀᴛɪᴏɴ: {duration}\n📚 Qᴜᴀʟɪᴛʏ: {quality}\n📁 Sɪᴢᴇ: {Size}</b>"
 
     try:
-        # Video/Reel Handling
+        # Video/Reel Send
         if extension in ["mp4", "mkv"] or not extension:
             await client.send_chat_action(message.chat.id, ChatAction.UPLOAD_VIDEO)
             t = await message.reply_video(
@@ -107,7 +146,7 @@ async def handle_direct_instagram_link(client, message):
                 await asyncio.sleep(REEL_AUTO_DELETE)
                 await t.delete()
 
-        # Image/Photo Handling
+        # Photo Send
         elif extension in ["jpg", "jpeg", "png"]:
             await client.send_chat_action(message.chat.id, ChatAction.UPLOAD_PHOTO)
             i = await message.reply_photo(
